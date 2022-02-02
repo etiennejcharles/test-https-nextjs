@@ -4,7 +4,8 @@ This example shows the most basic behind having an HTTPS with a self-signed cert
 
 ## How to use
 
+Fork repo then run:
 ```bash
-clone current repo
+> npm run dev
 ```
 
