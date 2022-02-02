@@ -4,35 +4,31 @@ import chalk from 'chalk';
 const { green, blue } = chalk;
 import { execSync } from "child_process";
 const { mkdirSync } = fs
+const CERTIFICATES_DIR_NAME = 'certificates';
 createSelfSignedCertificate();
+import { createServer }  from  "https"
+import next  from  "next"
+import { parse }  from  "url"
+const dev = process.env.NODE_ENV !== "production";
+const app = next({ dev });
+const handle = app.getRequestHandler();
+const httpsOptions = {
+  key: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.key`),
+  cert: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.crt`),
+}
+;
+app.prepare().then(() => {
+  createServer(httpsOptions, (req, res) => {
+    const parsedUrl = parse(req.url, true);
+    handle(req, res, parsedUrl);
+  }).listen(3000, (err) => {
+    if (err) throw err;
+    console.log("> Server started on https://localhost:3000");
+  });
+});
 
-
-
-
-// const fs  = require( "fs")
-// const { createServer }  = require( "https")
-// const next  = require( "next")
-// const { parse }  = require( "url")
-// const dev = process.env.NODE_ENV !== "production";
-// const app = next({ dev });
-// const handle = app.getRequestHandler();
-// const httpsOptions = {
-//   key: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}}/localhost.key`),
-//   cert: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}}/localhost.crt`),
-// };
-// app.prepare().then(() => {
-//   createServer(httpsOptions, (req, res) => {
-//     const parsedUrl = parse(req.url, true);
-//     handle(req, res, parsedUrl);
-//   }).listen(3000, (err) => {
-//     if (err) throw err;
-//     console.log("> Server started on https://localhost:3000");
-//   });
-// });
 
 function createSelfSignedCertificate() {
-  // params
-  const CERTIFICATES_DIR_NAME = 'certificates';
   const CERTIFICATE_NAME = 'localhost';
   const folderAndName = `${CERTIFICATES_DIR_NAME}/${CERTIFICATE_NAME}`
 
