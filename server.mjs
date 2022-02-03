@@ -31,6 +31,12 @@ app.prepare().then(() => {
 function createSelfSignedCertificate() {
   const CERTIFICATE_NAME = 'localhost';
   const folderAndName = `${CERTIFICATES_DIR_NAME}/${CERTIFICATE_NAME}`
+  // return if certificate already exists
+  if(fs.existsSync(`./${folderAndName}.crt`))
+  {
+    log(green(`...Certificate ${CERTIFICATE_NAME} already exists`))
+    return;
+  }
 
   // makes the directory if it doesn't exist
   mkdirSync(`./${CERTIFICATES_DIR_NAME}`, { recursive: true });
