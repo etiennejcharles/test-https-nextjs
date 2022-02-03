@@ -4,14 +4,14 @@ import chalk from 'chalk';
 const { green, blue } = chalk;
 import { execSync } from "child_process";
 const { mkdirSync } = fs
-const CERTIFICATES_DIR_NAME = 'certificates';
-createSelfSignedCertificate();
 import { createServer }  from  "https"
 import next  from  "next"
 import { parse }  from  "url"
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
+const CERTIFICATES_DIR_NAME = 'certificates';
+createSelfSignedCertificate();
 const httpsOptions = {
   key: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.key`),
   cert: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.crt`),
@@ -34,7 +34,7 @@ function createSelfSignedCertificate() {
   // return if certificate already exists
   if(fs.existsSync(`./${folderAndName}.crt`))
   {
-    log(green(`...Certificate ${CERTIFICATE_NAME} already exists`))
+    log(blue(`...Certificate ${CERTIFICATE_NAME} already exists for HTTPS local development`))
     return;
   }
 
