@@ -13,8 +13,8 @@ const handle = app.getRequestHandler();
 const CERTIFICATES_DIR_NAME = 'certificates';
 createSelfSignedCertificate();
 const httpsOptions = {
-  key: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.key`),
-  cert: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.crt`),
+  key: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.key`), // private key, can be PEM or DER
+  cert: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.crt`), // certificate, can be PEM or DER
 }
 ;
 app.prepare().then(() => {
@@ -52,6 +52,7 @@ function createSelfSignedCertificate() {
   // Add the certificate to the keychain on mac os
   if (isMacOs) {
     execSync(`sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./${folderAndName}.crt`);
+  // Add the certificate to the keychain on windows
   } else if (isWindows){
     execSync(`certutil -addstore -f "Root" ./${folderAndName}.crt`);
   } else {
