@@ -1,6 +1,6 @@
 # NextJS with local HTTPS
 
-This example shows the most simple to have an HTTPS server (locally) with a self-signed certificate in nextjs and a custom server 
+This example shows the most simple way to have an HTTPS server (locally) with a self-signed certificate in nextjs and a custom server 
 
 The example uses `openssl` as a tool to create the self-signed certificate
 
