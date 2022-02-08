@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "node server.mjs",
+    "dev": "node ./server/index.mjs",
     "build": "next build",
     "start": "cross-env NODE_ENV=production start"
   },
