@@ -53,17 +53,16 @@ async function createSelfSignedCertificate() {
 
   const isWindows = process.platform === 'win32';
   const isMacOs = process.platform === 'darwin';
-  const platform = isWindows ? 'windows' : 'macos'
-  const message = `You must add the certificate to your keychain on ${platform} to prevent the server from being blocked by the browser`
 
   // Add the certificate to the keychain on mac os
+  const certPath  = `./${folderAndName}.crt`
   if (isMacOs) {
-    execSync(`sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ./${folderAndName}.crt`);
+    execSync(`sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${certPath}`);
     // Add the certificate to the keychain on windows
   } else if (isWindows) {
     const isAdmin = await checkAdminPrompt()
     if(isAdmin){
-      execSync(`certutil -addstore -f "Root" "./${folderAndName}.crt"`);
+      execSync(`certutil -addstore -f "Root" "${certPath}"`);
     }
     else {
       console.log(yellow('...You must have admin priviliges to add the certificate to the keychain. Please run the command as an admin'));
