@@ -9,6 +9,7 @@
     "chalk": "^5.0.0",
     "command-exists": "^1.2.9",
     "cross-env": "^7.0.3",
+    "lodash": "^4.17.21",
     "next": "latest",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

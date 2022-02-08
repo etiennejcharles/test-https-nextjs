@@ -1,32 +1,38 @@
 import fs from "fs";
 import { platform } from "os"
+const {existsSync} = fs
 const { log } = console
+import isEmpty from "lodash/isEmpty.js";
 import chalk from 'chalk';
 const { green, blue, yellow } = chalk;
 import { execSync, exec } from "child_process";
 import { sync as commandExistsSync } from 'command-exists'
 const { mkdirSync } = fs
-import { createServer } from "https"
+import { createServer as serverHttps } from "https"
+import { createServer as serverHttp } from "http"
 import next from "next"
 import { parse } from "url"
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
+const CERTIFICATE_NAME = 'localhost';
 const CERTIFICATES_DIR_NAME = 'certificates';
 createSelfSignedCertificate();
+const KEY_PATH = `./${CERTIFICATES_DIR_NAME}/${CERTIFICATE_NAME}.key`;
+const CERTIFICATE_PATH = `./${CERTIFICATES_DIR_NAME}/${CERTIFICATE_NAME}.crt`;
+const httpsOptions = getHttpsOptions(KEY_PATH, CERTIFICATE_PATH)
 
-const httpsOptions = {
-  key: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.key`), // private key, can be PEM or DER
-  cert: fs.readFileSync(`./${CERTIFICATES_DIR_NAME}/localhost.crt`), // certificate, can be PEM or DER
-}
-  ;
 app.prepare().then(() => {
+  const PORT = 3000;
+  const hasCertificates = !isEmpty(httpsOptions);
+  const createServer = hasCertificates ?  serverHttps : serverHttp;
   createServer(httpsOptions, (req, res) => {
     const parsedUrl = parse(req.url, true);
     handle(req, res, parsedUrl);
-  }).listen(3000, (err) => {
+  }).listen(PORT, (err) => {
+    const protocol = hasCertificates ? 'https' : 'http';
     if (err) throw err;
-    console.log("> Server started on https://localhost:3000");
+    console.log(`> Server started on ${protocol}://localhost:${PORT}"`);
   });
 });
 
@@ -37,11 +43,12 @@ async function createSelfSignedCertificate() {
     log(yellow('...openssl command is not installed. Please install it to run project in HTTPS.'))
     return
   }
-  const CERTIFICATE_NAME = 'localhost';
+
   const folderAndName = `${CERTIFICATES_DIR_NAME}/${CERTIFICATE_NAME}`
+  const certPath  = `./${folderAndName}.crt`
   // return if certificate already exists
-  if (fs.existsSync(`./${folderAndName}.crt`)) {
-    log(yellow(`...Certificate ${CERTIFICATE_NAME} already exists for HTTPS local development`))
+  if (fs.existsSync(`${certPath}`)) {
+    log(green('...Certificates found, using them'))
     return;
   }
 
@@ -55,7 +62,7 @@ async function createSelfSignedCertificate() {
   const isMacOs = process.platform === 'darwin';
 
   // Add the certificate to the keychain on mac os
-  const certPath  = `./${folderAndName}.crt`
+
   if (isMacOs) {
     execSync(`sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain ${certPath}`);
     // Add the certificate to the keychain on windows
@@ -110,3 +117,12 @@ function checkAdminPrompt() {
 }
 
 
+function getHttpsOptions(KEY_PATH, CERTIFICATE_PATH){
+  if(existsSync(KEY_PATH) && existsSync(CERTIFICATE_PATH)){
+    return {
+      key: fs.readFileSync(`${KEY_PATH}`), // private key, can be PEM or DER
+      cert: fs.readFileSync(`${CERTIFICATE_PATH}`), // certificate, can be PEM or DER
+    }
+  }
+  return {}
+}
