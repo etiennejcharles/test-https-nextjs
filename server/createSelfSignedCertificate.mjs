@@ -58,7 +58,6 @@ export async function createSelfSignedCertificate() {
   }
   // Add the certificate to the keychain on windows
   log(green(`Certificate: ${CERTIFICATE_NAME} Successfully Created`));
-  console.log('Goes to here ?')
   return { isSuccess: true };
 
 }
