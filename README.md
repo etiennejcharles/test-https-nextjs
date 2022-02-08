@@ -8,7 +8,7 @@ The example uses `openssl` as a tool to create the self-signed certificate
 
 If you have chocolatey installed run 
 ```bash
-> choco install openssl
+choco install openssl
 ```
 
 
@@ -20,7 +20,7 @@ If you have chocolatey installed run
 
 Fork repo then run:
 ```bash
-> npm i
-> npm run dev
+npm i
+npm run dev
 ```
 
