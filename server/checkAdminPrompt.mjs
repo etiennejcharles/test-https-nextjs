@@ -4,7 +4,7 @@ import { exec } from "child_process";
 
 
 
-export function isWindowAdminPrompt() {
+export function isWindowAdminPrompt({silent = true} = {}) {
   return new Promise(resolve => {
     if (process.platform == "win32") {
       exec('net session', function (err) {
@@ -15,7 +15,10 @@ export function isWindowAdminPrompt() {
         }
       });
     } else {
-      throw new Error('Can not determine if admin priviliges are present or not. This package is only compatible with Windows OS');
+      if(!silent){
+        console.log('...Can not determine if admin priviliges are present or not')
+      }
+      resolve(true);
     }
   });
 }

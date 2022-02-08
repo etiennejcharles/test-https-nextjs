@@ -11,8 +11,9 @@ const { log } = console
 
 export async function createSelfSignedCertificate() {
   const openSSLInstalled = commandExistsSync('openssl');
-  const isWindowsAdmin = await isWindowAdminPrompt();
-  if(!isWindowsAdmin) {
+  const isWindows = process.platform === 'win32';
+  const isWindowsAdmin = await isWindowAdminPrompt({silent: !isWindows});
+  if(isWindows && !isWindowsAdmin) {
     log(yellow('...Command Prompt is not admin, Cannot run in HTTPS'));
     return { isSuccess: false };
   }
@@ -36,7 +37,7 @@ export async function createSelfSignedCertificate() {
   log(green(`...Creating the Self-Signed ${CERTIFICATE_NAME} Certificate for HTTPS dev locally`));
   createCert(folderAndName, CERTIFICATE_NAME);
 
-  const isWindows = process.platform === 'win32';
+
   const isMacOs = process.platform === 'darwin';
 
   // Add the certificate to the keychain on mac os
