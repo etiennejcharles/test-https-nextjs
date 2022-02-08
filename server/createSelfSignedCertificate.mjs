@@ -11,9 +11,15 @@ const { log } = console
 
 export async function createSelfSignedCertificate() {
   const openSSLInstalled = commandExistsSync('openssl');
+  const isWindowsAdmin = await isWindowAdminPrompt();
+  if(!isWindowsAdmin) {
+    log(yellow('...Command Prompt is not admin, Cannot run in HTTPS'));
+    return { isSuccess: false };
+  }
+
   if (!openSSLInstalled) {
     log(yellow('...openssl command is not installed. Please install it to run project in HTTPS.'));
-    return;
+    return { isSuccess: false };
   }
 
   const folderAndName = `${CERTIFICATES_DIR_NAME}/${CERTIFICATE_NAME}`;
@@ -21,7 +27,7 @@ export async function createSelfSignedCertificate() {
   // return if certificate already exists
   if (fs.existsSync(`${certPath}`)) {
     log(green('...Certificates found, using them'));
-    return;
+    return { isSuccess: true };
   }
 
   // makes the directory if it doesn't exist
@@ -52,5 +58,7 @@ export async function createSelfSignedCertificate() {
   }
   // Add the certificate to the keychain on windows
   log(green(`Certificate: ${CERTIFICATE_NAME} Successfully Created`));
+  console.log('Goes to here ?')
+  return { isSuccess: true };
 
 }
